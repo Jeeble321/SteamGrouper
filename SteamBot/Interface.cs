@@ -16,6 +16,7 @@ using SteamKit2;
 using SteamTrade;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using SteamGrouper;
 
 namespace SteamBot
 {
@@ -24,7 +25,6 @@ namespace SteamBot
         // Variables for group gathering
         public static string BotVersion = "v" + Application.ProductVersion.Remove(Application.ProductVersion.LastIndexOf('.'));
         string gid;
-        bool multiple = false;
         public static bool inviteOffline = true;
         public static ulong currentSID = 0;
         static int retry = 0;
@@ -85,7 +85,7 @@ namespace SteamBot
 
         public void RefreshSubscription()
         {
-            string baseURL = "http://www.steamgrouper.com/app/get";
+            string baseURL = "http://www.steamgrouper.com/app/get.php";
             string uri = baseURL + "?username=" + HttpUtility.UrlEncode(Welcome.username);
             GetSubscription(uri);
         }
@@ -105,6 +105,16 @@ namespace SteamBot
                 DateTime d_subEx = Convert.ToDateTime(subEx);
                 TimeSpan difference = d_subEx - d_subNow;
                 subExInMinutes = Convert.ToInt32(difference.TotalMinutes);
+                if (subExInMinutes <= 0)
+                {
+                    this.Invoke((Action)(() =>
+                    {
+                        Application.ExitThread();
+                        Application.Exit();
+                        Environment.Exit(0);
+                        // Exit the program
+                    }));
+                }
             }
         }
 
@@ -200,6 +210,18 @@ namespace SteamBot
         {
             if (Bot.IsLoggedIn)
             {
+                if (text_gather.Text == "" || text_gather.Text == "Group to gather from")
+                {
+                    MessageBox.Show("You need to type in the group that you want to gather members from.\r\n"
+                                  + "For example, if your group's URL is http://steamcommunity.com/groups/SteamGrouper, then you would type in \"steamgrouper\".",
+                    "Blank Input",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation,
+                    MessageBoxDefaultButton.Button1);
+                    return;
+                }
+                SteamGrouper.Properties.Settings.Default.group_gather_from = text_gather.Text;
+                SteamGrouper.Properties.Settings.Default.Save();
                 text_gather.Enabled = false;
                 button_gather.Enabled = false;
                 done = false;
@@ -207,7 +229,12 @@ namespace SteamBot
                 numMember = 0;
                 retry = 0;
                 startTime = DateTime.Now;
-                backgroundWorker1.RunWorkerAsync();
+                new Thread(() =>
+                {
+                    string path = "http://steamcommunity.com/groups/" + text_gather.Text + "/memberslistxml/?xml=1";
+                    AppendText(text_log, "\r\n\r\nGathering list of SteamID64s from group \"" + text_gather.Text + "\"...\n");
+                    gatherSID(text_gather.Text, path);
+                }).Start();
             }
             else
             {
@@ -228,8 +255,10 @@ namespace SteamBot
         {
             if (Bot.IsLoggedIn)
             {
-                if (text_invite.Text != "")
+                if (text_invite.Text != "" || text_invite.Text != "Group to invite members to")
                 {
+                    SteamGrouper.Properties.Settings.Default.group_invite_to = text_invite.Text;
+                    SteamGrouper.Properties.Settings.Default.Save();
                     Thread thread1 = new Thread(() => Bot.invite(SelectInvite.selected, text_invite.Text, text_log, button_invite, label_invite));
                     if (!inviting)
                     {
@@ -353,10 +382,9 @@ namespace SteamBot
                         {
                             try
                             {
-                                Console.WriteLine("Got to here 1");
                                 File.WriteAllText("lists/gl_" + groupname.ToLower(), gatherList.ToString());
                                 if (!done)
-                                    AppendText(text_log, "\r\nDone writing to file.");
+                                    AppendText(text_log, "Done writing to file.");
                                 done = true;
                                 break;
                             }
@@ -365,15 +393,24 @@ namespace SteamBot
                                 Console.WriteLine(count);
                                 Thread.Sleep(2000);
                             }                            
-                        }                        
-                        UpdateProgress(progress_gather, 0);
-                        this.Invoke((Action)(() =>
+                        }
+                        if (!done)
                         {
-                            text_gather.Enabled = true;
-                            button_gather.Enabled = true;
-                        }));
-                        UpdateLabel(label_progress, "State: Idle");
-                        UpdateLabel(label_gather_est, "Estimated time remaining:");
+                            AppendText(text_log, "Failed writing to file. Please try again!");
+                        }
+                        for (int count = 0; count < 5; count++)
+                        {
+                            // Stupid multithreaded... I have no idea what I'm doing
+                            UpdateProgress(progress_gather, 0);
+                            this.Invoke((Action)(() =>
+                            {
+                                text_gather.Enabled = true;
+                                button_gather.Enabled = true;
+                            }));
+                            UpdateLabel(label_progress, "State: Idle");
+                            UpdateLabel(label_gather_est, "Estimated time remaining:");
+                            Thread.Sleep(100);
+                        }
                     }
                 }
                 else if (!done)
@@ -384,7 +421,7 @@ namespace SteamBot
                         {
                             File.WriteAllText("lists/gl_" + groupname.ToLower(), gatherList.ToString());
                             if (!done)
-                                AppendText(text_log, "\r\nDone writing to file.");
+                                AppendText(text_log, "Done writing to file.");
                             done = true;
                             break;
                         }
@@ -419,7 +456,7 @@ namespace SteamBot
                         }
                         else
                         {
-                            AppendText(text_log, "\r\nFailed to gather info.");
+                            AppendText(text_log, "Failed to gather info.");
                             retry = 0;
                         }
                     }
@@ -434,7 +471,7 @@ namespace SteamBot
                         }
                         else
                         {
-                            AppendText(text_log, "\r\nFailed to gather info.");
+                            AppendText(text_log, "Failed to gather info.");
                             retry = 0;
                         }
                     }
@@ -451,7 +488,7 @@ namespace SteamBot
                     }
                     else
                     {
-                        AppendText(text_log, "\r\nFailed to gather info.");
+                        AppendText(text_log, "Failed to gather info.");
                         retry = 0;
                     }
                     UpdateLabel(label_progress, "State: Idle");
@@ -459,7 +496,7 @@ namespace SteamBot
             }
             catch (Exception ex)
             {
-                AppendText(text_log, "\r\nError getting group info!");
+                AppendText(text_log, "Error getting group info!");
                 AppendText(text_log, ex.Message);
                 UpdateLabel(label_progress, "State: Idle");
             }        
@@ -487,7 +524,7 @@ namespace SteamBot
         }
 
         private void Interface_Load(object sender, EventArgs e)
-        {
+        {            
             progress_invite.Style = ProgressBarStyle.Blocks;
             offlineUsersToolStripMenuItem.Checked = true;
             label_info.Text = "Invite Speed: " + inviteSpeed + "s";
@@ -501,7 +538,8 @@ namespace SteamBot
             else
             {
                 unlockFullVersionToolStripMenuItem.Visible = false;
-                DateTime subNow = Convert.ToDateTime(Welcome.subNow);
+                deregisterThisComputerToolStripMenuItem.Visible = true;
+                DateTime subNow = Convert.ToDateTime(Welcome.subNow);                
                 DateTime subEx = Convert.ToDateTime(Welcome.subEx);
                 TimeSpan difference = subEx - subNow;
                 subExInMinutes = Convert.ToInt32(difference.TotalMinutes);
@@ -509,10 +547,26 @@ namespace SteamBot
                 timer.IsBackground = true;
                 timer.Start();
                 text_log.AppendText(subNow.ToString("f") + " UTC\r\n\r\nWelcome to SteamGrouper " + BotVersion + ", " + Welcome.username + "!\n\n");
-                text_log.AppendText("\r\nSubscription expires: " + subEx + " UTC. That's " + difference.Days + " days, " + difference.Hours + " hours and " + difference.Minutes + " minutes left.\n\n");
+                text_log.AppendText("Subscription expires: " + subEx + " UTC. That's " + difference.Days + " days, " + difference.Hours + " hours and " + difference.Minutes + " minutes left.\n\n");
             }
             text_gather.GotFocus += text_gather_GotFocus;
             text_invite.GotFocus += text_invite_GotFocus;
+            inviteSpeed = SteamGrouper.Properties.Settings.Default.speed_normal;
+            inviteSpeedMin = SteamGrouper.Properties.Settings.Default.speed_min;
+            inviteSpeedMax = SteamGrouper.Properties.Settings.Default.speed_max;
+            MinMax = SteamGrouper.Properties.Settings.Default.invite_minmax;
+            if (MinMax)
+            {
+                label_info.Text = "Invite Speed: " + inviteSpeedMin + "s to " + inviteSpeedMax + "s";
+            }
+            else
+            {
+                label_info.Text = "Invite Speed: " + inviteSpeed + "s";
+            }
+            if (!String.IsNullOrEmpty(SteamGrouper.Properties.Settings.Default.group_invite_to))
+                this.text_invite.Text = SteamGrouper.Properties.Settings.Default.group_invite_to;
+            if (!String.IsNullOrEmpty(SteamGrouper.Properties.Settings.Default.group_gather_from))
+                this.text_gather.Text = SteamGrouper.Properties.Settings.Default.group_gather_from;
         }
 
         private void text_gather_GotFocus(object sender, EventArgs e)
@@ -531,16 +585,6 @@ namespace SteamBot
                 text_invite.Clear();
                 text_invite_cleared = true;
             }
-        }
-
-        private static void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void inviteSpeedToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void offlineUsersToolStripMenuItem_Click(object sender, EventArgs e)
@@ -562,16 +606,6 @@ namespace SteamBot
             InviteSpeed inviteForm = new InviteSpeed();
             inviteForm.ShowDialog(this);
             inviteForm.Focus();
-        }
-
-        private void label_info_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void text_username_Changed(object sender, EventArgs e)
-        {
-
         }
 
         private void button_login_Click(object sender, EventArgs e)
@@ -750,15 +784,74 @@ namespace SteamBot
             createList.Activate();
         }
 
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        private void helpToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            string path = "http://steamcommunity.com/groups/" + text_gather.Text + "/memberslistxml/?xml=1";
-            AppendText(text_log, "\r\n\r\nGathering list of SteamID64s...\n");
-            gatherSID(text_gather.Text, path);            
+            string help = "To gather/invite from a group, you only need to enter the group"
+                        + " name in their custom URL. For example, if the group URL is"
+                        + " http://steamcommunity.com/groups/SteamGrouper, then you would"
+                        + " type in \"steamgrouper\".";
+            MessageBox.Show(help,
+                            "Help",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information,
+                            MessageBoxDefaultButton.Button1);
         }
 
-        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {  
+        private void whatsNewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SteamGrouper.WhatsNew showNew = new SteamGrouper.WhatsNew();
+            showNew.ShowDialog();
+            showNew.Activate();
+        }
+
+        private void deregisterThisComputerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string message = "Are you sure? This will deregister your current computer and allow you to use SteamGrouper on a different one.";
+            DialogResult choice = MessageBox.Show(new Form() { TopMost = true }, message,
+                            "Deregister",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Information,
+                            MessageBoxDefaultButton.Button1);
+            switch (choice)
+            {
+                case DialogResult.Yes:
+                    if (!Deregister())
+                    {
+                        MessageBox.Show(new Form() { TopMost = true }, "Deregistration failed. Please try again later.",
+                            "Failed to Deregister",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Hand,
+                            MessageBoxDefaultButton.Button1);
+                    }
+                    else
+                    {
+                        MessageBox.Show(new Form() { TopMost = true }, "Successfully deregistered! SteamGrouper will now close.",
+                            "Successfully Deregistered",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information,
+                            MessageBoxDefaultButton.Button1);
+                        Application.Exit();
+                        Environment.Exit(0);
+                    }
+                    break;
+                case DialogResult.No:                    
+                    break;
+            }
+        }
+
+        private bool Deregister()
+        {
+            //http://steamgrouper.com/app/dereg.php
+            string hwid = Welcome.HWID();
+            string hwid_hash = Welcome.CreatePasswordHash(hwid, "waylaidwanderer1158");
+            string baseURL = "http://steamgrouper.com/app/dereg.php";
+            string uri = baseURL + "?username=" + HttpUtility.UrlEncode(Welcome.username) + "&hwid=" + hwid_hash;
+            string result = Welcome.HTTPRequest(uri);
+            if (result != "done")
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

@@ -439,7 +439,7 @@ namespace SteamBot
             successfulInvite = 0;
             int counter = 0;
             string line = "";
-            string path = "http://steamcommunity.com/groups/" + group + "/memberslistxml/?xml=1";
+            string path = "http://steamcommunity.com/groups/" + group + "/memberslistxml/?xml=1e";
             retry = 0;
             string groupID = getGroupID(group, path);
             if (groupID != "")

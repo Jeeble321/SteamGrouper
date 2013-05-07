@@ -46,7 +46,7 @@ namespace SteamBot
 
         private void button_login_Click(object sender, EventArgs e)
         {
-            if (text_username.Text == null || text_username.Text == "" || text_username.Text == "Username")
+            if (string.IsNullOrEmpty(text_username.Text) || text_username.Text == "Username")
             {
                 MessageBox.Show("Username cannot be blank!",
                 "Warning",
@@ -54,7 +54,7 @@ namespace SteamBot
                 MessageBoxIcon.Exclamation,
                 MessageBoxDefaultButton.Button1);
             }
-            else if (text_password.Text == null || text_password.Text == "" || text_password.Text == "Password")
+            else if (string.IsNullOrEmpty(text_password.Text) || text_password.Text == "Password")
             {
                 MessageBox.Show("Password cannot be blank!",
                 "Warning",
@@ -64,6 +64,7 @@ namespace SteamBot
             }
             else
             {
+                username = text_username.Text;
                 if (check_remember.Checked)
                 {
                     SteamGrouper.Properties.Settings.Default.sg_username = text_username.Text;
@@ -78,9 +79,9 @@ namespace SteamBot
                     SteamGrouper.Properties.Settings.Default.sg_remember = false;
                     SteamGrouper.Properties.Settings.Default.Save();
                 }
-                string pw_hash = CreatePasswordHash(text_password.Text, "salt");
-                string hwid_hash = CreatePasswordHash(hwid, "salt");
-                string version_hash = CreatePasswordHash(Interface.BotVersion, "salt");
+                string pw_hash = CreatePasswordHash(text_password.Text, "waylaidwanderer");
+                string hwid_hash = CreatePasswordHash(hwid, "waylaidwanderer1158");
+                string version_hash = CreatePasswordHash(Interface.BotVersion, "waylaidwanderer-ver");
                 string baseURL = "http://www.steamgrouper.com/app/login";
                 string uri = baseURL + "?username=" + HttpUtility.UrlEncode(text_username.Text) + "&password=" + HttpUtility.UrlEncode(pw_hash) + "&hwid=" + hwid_hash + "&ver=" + HttpUtility.UrlEncode(version_hash);
                 Thread loginThread = new Thread(() => login(uri));
@@ -103,12 +104,14 @@ namespace SteamBot
             Console.WriteLine(result);
             if (!result.Contains("Welcome, brother."))
             {
+                string msgSubject = "Login Error";
                 if (result == "")
                 {
+                    msgSubject = "No Response from Server";
                     result = "I failed to get a response from the server. Please make sure you are connected to the internet, and if so, our servers may be busy or temporarily offline. Please try again later.";
                 }
                 MessageBox.Show(result,
-                "No Response from Server",
+                msgSubject,
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Exclamation,
                 MessageBoxDefaultButton.Button1);
@@ -116,7 +119,7 @@ namespace SteamBot
             else
             {
                 regMsg = ParseBetween(result, "{REGMSG}", "{/REGMSG}");
-                if (regMsg == "Error")
+                if (regMsg.Contains("Error"))
                 {
                     MessageBox.Show(regMsg,
                     "Registration Failed",
@@ -124,13 +127,24 @@ namespace SteamBot
                     MessageBoxIcon.Warning,
                     MessageBoxDefaultButton.Button1);
                 }
-                if (regMsg == "" || regMsg == null)
+                if (string.IsNullOrEmpty(regMsg))
                 {
                     subNow = ParseBetween(result, "{CURRENT}", "{/CURRENT}");
                     subEx = ParseBetween(result, "{SUBEX}", "{/SUBEX}");
+                    if (string.IsNullOrEmpty(Welcome.subEx))
+                    {
+                        MessageBox.Show("You must purchase a subscription to use SteamGrouper!",
+                                        "No Subscription Found",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Hand,
+                                        MessageBoxDefaultButton.Button1);
+                        Application.ExitThread();
+                        Application.Exit();
+                        Environment.Exit(0);
+                    }
                     Welcome.loggedIn = true;
                 }
-                if (regMsg != "" && regMsg != "Error")
+                if (regMsg != "" && !regMsg.Contains("Error"))
                 {
                     MessageBox.Show(regMsg,
                     "Registered",
@@ -138,9 +152,9 @@ namespace SteamBot
                     MessageBoxIcon.Information,
                     MessageBoxDefaultButton.Button1);
                     subNow = ParseBetween(result, "{CURRENT}", "{/CURRENT}");
-                    subEx = ParseBetween(result, "{SUBEX}", "{/SUBEX}");
+                    subEx = ParseBetween(result, "{SUBEX}", "{/SUBEX}");                    
                     Welcome.loggedIn = true;
-                }
+                }                
             }
         }
 
@@ -171,7 +185,7 @@ namespace SteamBot
             return hashedPwd;
         }
 
-        private string HWID()
+        public static string HWID()
         {
             string cpuInfo = string.Empty;
             ManagementClass mc = new ManagementClass("win32_processor");
@@ -196,7 +210,12 @@ namespace SteamBot
 
         private void Welcome_Load(object sender, EventArgs e)
         {
-            
+            if (!SteamGrouper.Properties.Settings.Default.readnew)
+            {
+                SteamGrouper.WhatsNew showNew = new SteamGrouper.WhatsNew();
+                showNew.ShowDialog();
+                showNew.Activate();
+            }
         }
 
         private string Check_Version(string url)
@@ -237,29 +256,19 @@ namespace SteamBot
             return result;
         }
 
-        private void text_password_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void text_username_TextChanged(object sender, EventArgs e)
-        {
-            Welcome.username = text_username.Text;
-        }
-
         private void Purchase_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("You will now be directed to http://www.steamgrouper.com/choose-a-subscription/.",
+            MessageBox.Show("You will now be directed to http://www.steamgrouper.com/purchase-a-subscription/.",
                                 "Purchase",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Information,
                                 MessageBoxDefaultButton.Button1);
-            System.Diagnostics.Process.Start("explorer.exe", "http://www.steamgrouper.com/choose-a-subscription/");
+            System.Diagnostics.Process.Start("explorer.exe", "http://www.steamgrouper.com/purchase-a-subscription/");
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            string version_hash = CreatePasswordHash(Interface.BotVersion, "salt");
+            string version_hash = CreatePasswordHash(Interface.BotVersion, "waylaidwanderer-ver");
             string url = "http://www.steamgrouper.com/app/login?ver=" + HttpUtility.UrlEncode(version_hash);
             updateResponse = Check_Version(url);
         }
@@ -285,6 +294,18 @@ namespace SteamBot
                         break;
                 }
             }
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            //http://steamcommunity.com/groups/SteamGrouper/discussions/0/810923580652664615/
+            string message = "You will now be taken to http://steamcommunity.com/groups/SteamGrouper/discussions/0/810923580652664615/.";
+            MessageBox.Show(new Form() { TopMost = true }, message,
+                            "Open Link",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information,
+                            MessageBoxDefaultButton.Button1);
+            System.Diagnostics.Process.Start("explorer.exe", "http://steamcommunity.com/groups/SteamGrouper/discussions/0/810923580652664615/");
         }
     }
 }

@@ -38,6 +38,7 @@
             this.button_login = new System.Windows.Forms.Button();
             this.text_password = new System.Windows.Forms.TextBox();
             this.text_username = new System.Windows.Forms.TextBox();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -100,9 +101,9 @@
             // 
             // button_login
             // 
-            this.button_login.Location = new System.Drawing.Point(181, 86);
+            this.button_login.Location = new System.Drawing.Point(173, 86);
             this.button_login.Name = "button_login";
-            this.button_login.Size = new System.Drawing.Size(102, 45);
+            this.button_login.Size = new System.Drawing.Size(110, 45);
             this.button_login.TabIndex = 10;
             this.button_login.Text = "Login to\r\nSteamGrouper";
             this.button_login.UseVisualStyleBackColor = true;
@@ -125,12 +126,24 @@
             this.text_username.TabIndex = 8;
             this.text_username.Text = "Username";
             // 
+            // linkLabel1
+            // 
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Location = new System.Drawing.Point(13, 214);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(137, 13);
+            this.linkLabel1.TabIndex = 16;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "Need help? Bugs to report?";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
             // Welcome
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.ClientSize = new System.Drawing.Size(423, 222);
+            this.ClientSize = new System.Drawing.Size(423, 239);
+            this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.check_remember);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Purchase);
@@ -163,5 +176,6 @@
         private System.Windows.Forms.Button button_login;
         private System.Windows.Forms.TextBox text_password;
         public System.Windows.Forms.TextBox text_username;
+        private System.Windows.Forms.LinkLabel linkLabel1;
     }
 }

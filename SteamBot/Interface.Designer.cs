@@ -40,16 +40,18 @@
             this.speedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.inviteOfflineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.offlineUsersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deregisterThisComputerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gatherToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createCustomGatherlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearAllToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.blacklistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unlockFullVersionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.creditsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.whatsNewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label_info = new System.Windows.Forms.Label();
             this.label_targeting = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -123,6 +125,7 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.settingsToolStripMenuItem,
             this.listsToolStripMenuItem,
+            this.helpToolStripMenuItem1,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -134,7 +137,8 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.inviteSpeedToolStripMenuItem});
+            this.inviteSpeedToolStripMenuItem,
+            this.deregisterThisComputerToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
@@ -145,9 +149,8 @@
             this.speedToolStripMenuItem,
             this.inviteOfflineToolStripMenuItem});
             this.inviteSpeedToolStripMenuItem.Name = "inviteSpeedToolStripMenuItem";
-            this.inviteSpeedToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.inviteSpeedToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.inviteSpeedToolStripMenuItem.Text = "Invite";
-            this.inviteSpeedToolStripMenuItem.Click += new System.EventHandler(this.inviteSpeedToolStripMenuItem_Click);
             // 
             // speedToolStripMenuItem
             // 
@@ -172,6 +175,14 @@
             this.offlineUsersToolStripMenuItem.Text = "Offline Users";
             this.offlineUsersToolStripMenuItem.Click += new System.EventHandler(this.offlineUsersToolStripMenuItem_Click);
             // 
+            // deregisterThisComputerToolStripMenuItem
+            // 
+            this.deregisterThisComputerToolStripMenuItem.Name = "deregisterThisComputerToolStripMenuItem";
+            this.deregisterThisComputerToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.deregisterThisComputerToolStripMenuItem.Text = "Deregister This Computer";
+            this.deregisterThisComputerToolStripMenuItem.Visible = false;
+            this.deregisterThisComputerToolStripMenuItem.Click += new System.EventHandler(this.deregisterThisComputerToolStripMenuItem_Click);
+            // 
             // listsToolStripMenuItem
             // 
             this.listsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -187,7 +198,7 @@
             this.createCustomGatherlistToolStripMenuItem,
             this.clearAllToolStripMenuItem1});
             this.gatherToolStripMenuItem.Name = "gatherToolStripMenuItem";
-            this.gatherToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.gatherToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.gatherToolStripMenuItem.Text = "Gatherlist";
             // 
             // createCustomGatherlistToolStripMenuItem
@@ -209,7 +220,7 @@
             this.blacklistToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.clearAllToolStripMenuItem});
             this.blacklistToolStripMenuItem.Name = "blacklistToolStripMenuItem";
-            this.blacklistToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.blacklistToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.blacklistToolStripMenuItem.Text = "Blacklist";
             // 
             // clearAllToolStripMenuItem
@@ -219,12 +230,19 @@
             this.clearAllToolStripMenuItem.Text = "Clear All";
             this.clearAllToolStripMenuItem.Click += new System.EventHandler(this.clearAllToolStripMenuItem_Click);
             // 
+            // helpToolStripMenuItem1
+            // 
+            this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
+            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem1.Text = "Help";
+            this.helpToolStripMenuItem1.Click += new System.EventHandler(this.helpToolStripMenuItem1_Click);
+            // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.unlockFullVersionToolStripMenuItem,
             this.creditsToolStripMenuItem,
-            this.helpToolStripMenuItem});
+            this.whatsNewToolStripMenuItem});
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.aboutToolStripMenuItem.Text = "About";
@@ -243,12 +261,12 @@
             this.creditsToolStripMenuItem.Text = "Credits";
             this.creditsToolStripMenuItem.Click += new System.EventHandler(this.creditsToolStripMenuItem_Click);
             // 
-            // helpToolStripMenuItem
+            // whatsNewToolStripMenuItem
             // 
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.helpToolStripMenuItem.Text = "Help";
-            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
+            this.whatsNewToolStripMenuItem.Name = "whatsNewToolStripMenuItem";
+            this.whatsNewToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.whatsNewToolStripMenuItem.Text = "What\'s New";
+            this.whatsNewToolStripMenuItem.Click += new System.EventHandler(this.whatsNewToolStripMenuItem_Click);
             // 
             // label_info
             // 
@@ -258,7 +276,6 @@
             this.label_info.Size = new System.Drawing.Size(70, 13);
             this.label_info.TabIndex = 10;
             this.label_info.Text = "Invite Speed:";
-            this.label_info.Click += new System.EventHandler(this.label_info_Click);
             // 
             // label_targeting
             // 
@@ -284,7 +301,6 @@
             this.text_username.Name = "text_username";
             this.text_username.Size = new System.Drawing.Size(93, 20);
             this.text_username.TabIndex = 0;
-            this.text_username.TextChanged += new System.EventHandler(this.text_username_Changed);
             // 
             // text_password
             // 
@@ -375,11 +391,6 @@
             this.check_remember.Text = "Remember Me";
             this.check_remember.UseVisualStyleBackColor = true;
             // 
-            // backgroundWorker1
-            // 
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
-            // 
             // label_gather_est
             // 
             this.label_gather_est.AutoSize = true;
@@ -465,10 +476,12 @@
         private System.Windows.Forms.ToolStripMenuItem clearAllToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem blacklistToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearAllToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.CheckBox check_remember;
         private System.Windows.Forms.ToolStripMenuItem createCustomGatherlistToolStripMenuItem;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Label label_gather_est;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem whatsNewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deregisterThisComputerToolStripMenuItem;
     }
 }

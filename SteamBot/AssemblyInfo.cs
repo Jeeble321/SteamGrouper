@@ -7,6 +7,6 @@ using System.Reflection;
 [assembly: AssemblyCopyright("(C) 2013 waylaidwanderer")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("1.5.0")]
+[assembly: AssemblyVersion("1.6.0")]
 
 [assembly: AssemblyCompanyAttribute("SteamGrouper LLC.")]

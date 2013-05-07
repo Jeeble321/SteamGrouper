@@ -32,6 +32,14 @@ namespace SteamBot
         private void button1_Click(object sender, EventArgs e)
         {
             Interface mainForm = (Interface)this.Owner;
+            if (speedMin.Value < 18 || speedMax.Value < 18 || formInviteSpeed.Value < 18)
+            {
+                DialogResult dr = MessageBox.Show("You have chosen an invite speed of less than 18 seconds.\r\nThis is not recommended because Steam limits invites to 250 per hour, per community.\r\nClick Okay if you wish to continue anyway, or click Cancel to set a different speed.", "Invite Time Under 18 Seconds", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+                if (dr == DialogResult.Cancel)
+                {
+                    return;
+                }
+            }
             if (speedMin.Value == 0 && speedMax.Value == 0 && formInviteSpeed.Value != 0)
             {
                 Interface.inviteSpeed = Convert.ToInt32(formInviteSpeed.Value);                
@@ -75,6 +83,11 @@ namespace SteamBot
                 Interface.MinMax = false;
                 mainForm.label_info.Text = "Invite Speed: " + Interface.inviteSpeed + "s";
             }
+            SteamGrouper.Properties.Settings.Default.invite_minmax = Interface.MinMax;
+            SteamGrouper.Properties.Settings.Default.speed_max = Interface.inviteSpeedMax;
+            SteamGrouper.Properties.Settings.Default.speed_min = Interface.inviteSpeedMin;
+            SteamGrouper.Properties.Settings.Default.speed_normal = Interface.inviteSpeed;
+            SteamGrouper.Properties.Settings.Default.Save();
             this.Close();
             this.Dispose();
         }

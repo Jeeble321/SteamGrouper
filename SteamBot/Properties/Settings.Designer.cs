@@ -94,5 +94,89 @@ namespace SteamGrouper.Properties {
                 this["remember"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string group_gather_from {
+            get {
+                return ((string)(this["group_gather_from"]));
+            }
+            set {
+                this["group_gather_from"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string group_invite_to {
+            get {
+                return ((string)(this["group_invite_to"]));
+            }
+            set {
+                this["group_invite_to"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int speed_min {
+            get {
+                return ((int)(this["speed_min"]));
+            }
+            set {
+                this["speed_min"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int speed_max {
+            get {
+                return ((int)(this["speed_max"]));
+            }
+            set {
+                this["speed_max"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("18")]
+        public int speed_normal {
+            get {
+                return ((int)(this["speed_normal"]));
+            }
+            set {
+                this["speed_normal"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool invite_minmax {
+            get {
+                return ((bool)(this["invite_minmax"]));
+            }
+            set {
+                this["invite_minmax"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool readnew {
+            get {
+                return ((bool)(this["readnew"]));
+            }
+            set {
+                this["readnew"] = value;
+            }
+        }
     }
 }
